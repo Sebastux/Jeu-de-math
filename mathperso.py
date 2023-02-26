@@ -38,7 +38,7 @@ class MathPerso:
 
         os.makedirs("logs", exist_ok=True)
         chemin_logs = os.path.join("logs", f"{date.today().strftime('%d%m%Y')}_jeu_de_math.log")
-        logging.basicConfig(filename=chemin_logs, encoding='utf-8', level=logging.DEBUG,
+        logging.basicConfig(filename=chemin_logs, encoding='utf-8', level=logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%H:%M:%S')
         logging.info("Démarrage de l'application.")
@@ -54,12 +54,15 @@ class MathPerso:
         if self.operateur == 0:
             self.operateur_str = "+"
             self.reponse_calc = self.nombre1 + self.nombre2
+            logging.info("Addition demandé.")
         elif self.operateur == 1:
             self.operateur_str = "X"
             self.reponse_calc = self.nombre1 * self.nombre2
+            logging.info("Multiplication demandé.")
         elif self.operateur == 2:
             self.operateur_str = "-"
             self.reponse_calc = self.nombre1 - self.nombre2
+            logging.info("soustraction demandé.")
 
     def poser_question(self):
         self.tirage_hasard()
@@ -185,4 +188,5 @@ class MathPerso:
         print()
         self.table.title = self.nom_joueur
         self.console.print(self.table)
+        logging.info("Fin du programme.")
         print()
