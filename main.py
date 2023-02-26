@@ -1,3 +1,4 @@
+import os
 import sys
 
 from rich import print
@@ -17,8 +18,9 @@ def main():
         if jeu.poser_question():
             jeu.increase_score()
     jeu.afficher_score()
-    print("Appuyez sur une Entrée pour mettre fin au programme.")
-    sys.stdin.read(1)
+    if os.name == 'nt':
+        print("Appuyez sur une Entrée pour mettre fin au programme.")
+        sys.stdin.read(1)
 
 
 if __name__ == "__main__":
