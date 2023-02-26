@@ -1,0 +1,7 @@
+Version: 1.0.0
+CompanyName: Sebastux inc
+FileDescription: Jeu de math
+InternalName: Jeu de math
+LegalCopyright: This is free and unencumbered software released into the public domain.
+OriginalFilename: Jeu_de_math.exe
+ProductName: Jeu_de_math
