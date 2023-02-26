@@ -72,18 +72,18 @@ class MathPerso:
             except ValueError:
                 print("Erreur : votre réponse n'est pas valide. Veuillez saisir un nombre ou un chiffre.")
                 logging.exception("La réponse fournie a créé une exception.")
-
             else:
+                logging.info("Format de réponse correct.")
                 break
 
         if self.reponse_calc == reponse_int:
-            print("[green]Bonne réponse[/green]")
+            self.console.print("[green]Bonne réponse[/green]")
             print()
             self.table.add_row(str(self.nombre1) + " " + self.operateur_str + " " + str(self.nombre2),
                                reponse_str, str(self.reponse_calc), "✅")
             return True
-        print("[red]Mauvaise réponse[/red]")
-        print(f"La bonne réponse est : {self.reponse_calc}")
+        self.console.print("[red]Mauvaise réponse[/red]")
+        self.console.print(f"La bonne réponse est : [green]{self.reponse_calc}[/green]")
         print()
         self.table.add_row(str(self.nombre1) + " " + self.operateur_str + " " + str(self.nombre2),
                            reponse_str, str(self.reponse_calc), "❌")
@@ -117,7 +117,7 @@ class MathPerso:
         self.affiche_tab()
         moyenne = int(self.nb_questions / 2)
         print(f"Votre score est de : {self.score}/{self.nb_questions}")
-        logging.debug(f"Le score final est : {self.score}/{self.nb_questions}")
+        logging.info(f"Le score final est : {self.score}/{self.nb_questions}")
         if self.score == self.nb_questions:
             self.console.print(
                 f"[green]Félicitation[/green] {self.nom_joueur} !! Vous avez trouvé toutes les réponses. :cake:")
@@ -131,12 +131,11 @@ class MathPerso:
                 f"Vous pouvez mieux faire {self.nom_joueur}, Vous êtes en dessous de la moyenne. :raccoon:")
         elif self.score == moyenne:
             self.console.print(f"Tout juste la moyenne {self.nom_joueur} :vampire:, vous pouvez mieux faire.")
-
         print()
 
     def load_config(self):
         try:
-            logging.debug("Chargement du fichier de configuration")
+            logging.info("Chargement du fichier de configuration")
             with open(self.nom_config, "r") as file:
                 self.config.read_file(file)
                 self.nom_joueur = self.config.get("main", "nom", fallback="Joueur")
@@ -167,6 +166,7 @@ class MathPerso:
         if os.path.exists(self.nom_config):
             os.remove(self.nom_config)
         try:
+            logging.info("Sauvegarde du fichier de configuration")
             with open(self.nom_config, "w") as file:
                 if not self.config.has_section("main"):
                     self.config.add_section("main")
