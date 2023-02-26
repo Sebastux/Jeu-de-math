@@ -1,9 +1,14 @@
-from rich.console import Console
-from rich.table import Table
-from rich.traceback import install
 import configparser
 import os
 import random
+import logging
+
+from datetime import date
+from rich.console import Console
+from rich.table import Table
+from rich.traceback import install
+
+from fonctions import clear_screen
 
 
 class MathPerso:
@@ -23,13 +28,20 @@ class MathPerso:
 
         # Construction d'objet
         install()
-        self.console = Console(force_terminal=True,color_system="auto",emoji=True)
+        self.console = Console(force_terminal=True, color_system="auto", emoji=True)
         self.config = configparser.ConfigParser(comment_prefixes='#', allow_no_value=True)
         self.table = Table(show_header=True, header_style="bold magenta")
         self.table.add_column("opération", justify="center")
         self.table.add_column("Réponse joueur", justify="center")
         self.table.add_column("Bonne réponse", justify="center")
         self.table.add_column("Status", justify="center")
+
+        os.makedirs("logs", exist_ok=True)
+        chemin_logs = os.path.join("logs", f"{date.today().strftime('%d%m%Y')}_jeu_de_math.log")
+        logging.basicConfig(filename=chemin_logs, encoding='utf-8', level=logging.DEBUG,
+                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%H:%M:%S')
+        logging.info("Démarrage de l'application.")
 
     def tirage_hasard(self):
         self.nombre1 = random.randint(self.NOMBRE_MIN, self.NOMBRE_MAX)
@@ -53,10 +65,14 @@ class MathPerso:
         self.tirage_hasard()
         while True:
             reponse_str = input(f"Combien font {self.nombre1} {self.operateur_str} {self.nombre2} : ")
+            logging.debug(f"l'opération est {self.nombre1} {self.operateur_str} {self.nombre2}")
+            logging.debug(f"La réponse fournie est {reponse_str}")
             try:
                 reponse_int = int(reponse_str)
             except ValueError:
                 print("Erreur : votre réponse n'est pas valide. Veuillez saisir un nombre ou un chiffre.")
+                logging.exception("La réponse fournie a créé une exception.")
+
             else:
                 break
 
@@ -101,15 +117,18 @@ class MathPerso:
         self.affiche_tab()
         moyenne = int(self.nb_questions / 2)
         print(f"Votre score est de : {self.score}/{self.nb_questions}")
+        logging.debug(f"Le score final est : {self.score}/{self.nb_questions}")
         if self.score == self.nb_questions:
-            self.console.print(f"[green]Félicitation[/green] {self.nom_joueur} !! Vous avez trouvé toutes les réponses. :cake:")
+            self.console.print(
+                f"[green]Félicitation[/green] {self.nom_joueur} !! Vous avez trouvé toutes les réponses. :cake:")
         elif self.score == 0:
             self.console.print(f"Désolé {self.nom_joueur} !! Vous n'avez trouvé aucunes bonnes réponses.")
             self.console.print("Vous devriez réviser vos maths. :pile_of_poo:")
         elif self.score > moyenne:
             self.console.print(f"Pas mal {self.nom_joueur}, Vous êtes au-dessus de la moyenne. :smiley:")
         elif self.score < moyenne:
-            self.console.print(f"Vous pouvez mieux faire {self.nom_joueur}, Vous êtes en dessous de la moyenne. :raccoon:")
+            self.console.print(
+                f"Vous pouvez mieux faire {self.nom_joueur}, Vous êtes en dessous de la moyenne. :raccoon:")
         elif self.score == moyenne:
             self.console.print(f"Tout juste la moyenne {self.nom_joueur} :vampire:, vous pouvez mieux faire.")
 
@@ -117,11 +136,15 @@ class MathPerso:
 
     def load_config(self):
         try:
+            logging.debug("Chargement du fichier de configuration")
             with open(self.nom_config, "r") as file:
                 self.config.read_file(file)
                 self.nom_joueur = self.config.get("main", "nom", fallback="Joueur")
                 self.NOMBRE_MAX = self.config.getint("main", "maxi", fallback=10)
                 self.nb_questions = self.config.getint("main", "nb_questions", fallback=10)
+                logging.debug(f"Nom du joueur       : {self.nom_joueur}")
+                logging.debug(f"Nombre maxi         : {self.NOMBRE_MAX}")
+                logging.debug(f"Nombre de questions : {self.nb_questions}")
             return True
         except (FileNotFoundError, configparser.NoSectionError, configparser.NoOptionError,
                 configparser.MissingSectionHeaderError):
@@ -130,12 +153,14 @@ class MathPerso:
             self.nb_questions = 10
             self.nom_joueur = "Joueur"
             self.save_config()
+            logging.exception(f"Erreur lors du chargement du fichier de configuration {self.nom_config}.")
             return False
         except ValueError:
             print("L'un des paramètres numériques est incorrecte. Utilisation des valeurs par défaut.")
             self.NOMBRE_MAX = 10
             self.nb_questions = 10
             self.save_config()
+            logging.exception("Un des paramètres numériques est incorrecte.")
             return False
 
     def save_config(self):
@@ -154,6 +179,7 @@ class MathPerso:
                 self.config.write(file)
         except (FileNotFoundError, PermissionError):
             print("Erreur d'écriture du fichier")
+            logging.exception(f"Erreur d'écriture du fichier {self.nom_config}.")
 
     def affiche_tab(self):
         print()
