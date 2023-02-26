@@ -1,1 +1,2 @@
-# Jeu de math
+Jeu de math est issue de la formation python de [Jonathan Roux](https://codeavecjonathan.com/) disponible sur le site [UDEMY](https://www.udemy.com/fr/). Je l'ai adapté pour avoir une version objet et j'ai aussi ajouté quelques fonctionnalités. Ce programme est destiné à l'entraînement à la programmation python et à une enfant de 8 ans pour améliorer ses maths.
+Le fichier spec permet la compilation du script sous Linux (mon environnement de développement) ainsi que sous windows 10 à l'aide du package python pyinstaller. Je n'ai pas testé sous windows 11 ni sous macOS. La version de python utilisé pour le développement est la version 3.11.2
